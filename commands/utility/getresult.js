@@ -3,8 +3,8 @@ const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('disco
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('start')
-        .setDescription('Start the wager race')
+        .setName('getresult')
+        .setDescription('Get the result of the wager race')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addIntegerOption(option =>
             option.setName('start_timestamp')

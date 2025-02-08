@@ -1,11 +1,9 @@
-require('dotenv').config();
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('stop')
-        .setDescription('Stop the wager race'),
-    async execute(interaction) {
-        interaction.reply("The wager race");
-    },
+        .setDescription('Stop the wager race')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    async execute(interaction) {},
 };
