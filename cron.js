@@ -12,7 +12,7 @@ const startTask = async (interaction) => {
 
     await checkConnectionWithEmpireDrop(interaction);
 
-    const { channel, startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed } = getStartCommandArgs(interaction);
+    const { channel, startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery } = getStartCommandArgs(interaction);
 
     let rewards = [];
     try {
@@ -22,7 +22,7 @@ const startTask = async (interaction) => {
         return;
     }
 
-    const task = cron.schedule('0 * * * *', async () => {
+    const task = cron.schedule(updateEvery, async () => {
         console.log(`Wager race running on id: ${guildId}`)
         const res = await fetchEmpireDrop(startTimestamp, endTimestamp, publicKey, privateKey);
         const empireDropRace = (await res.data);

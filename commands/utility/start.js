@@ -26,6 +26,15 @@ module.exports = {
             option.setName('rewards')
                 .setDescription('The rewards table from biggest to smallest amount of the wager race  (format: [1000, 800, 700, ...])')
                 .setRequired(true))
+        .addStringOption(option =>
+            option.setName('update_every')
+                .setDescription('The time the wager race will be refreshed (a new message will be post in your channel)')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'Every 6h', value: '0 */6 * * *' },
+                    { name: 'Every 12h', value: '0 */12 * * *' },
+                    { name: 'Every 24h', value: '0 0 * * *' },
+                ))
         .addChannelOption(option =>
             option.setName('channel')
                 .setDescription('The channel to post result to')

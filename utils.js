@@ -52,12 +52,13 @@ const getStartCommandArgs = (interaction) => {
     const privateKey = interaction.options.getString('private_key');
     const publicKey = interaction.options.getString('public_key');
     const rewardsNotParsed = interaction.options.getString('rewards');
+    const updateEvery = interaction.options.getString('update_every');
 
-    return { channel, startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed };
+    return { channel, startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery };
 }
 
 const checkConnectionWithEmpireDrop = async (interaction) => {
-    const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed } = getStartCommandArgs(interaction);
+    const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery } = getStartCommandArgs(interaction);
 
     let rewards = [];
     try {
@@ -97,7 +98,23 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
         await interaction.editReply("Error while fetching EMPIREDROP, please verify the public key you provided");
     }
 
-    await interaction.editReply("You are now connected with the EMPIREDROP api, result should be posted every hours !");
+    let hours = '';
+
+    switch (updateEvery) {
+        case '0 */6 * * *':
+            hours = '6';
+            break;
+        case '0 */12 * * *':
+            hours = '12';
+            break;
+        case '0 0 * * *':
+            hours = '24';
+            break;
+        default:
+            hours = '6';
+    }
+
+    await interaction.editReply(`You are now connected with the EMPIREDROP api, result should be posted every ${hours} hours !`);
 }
 
 const getAsciiTable = (rewards, players, withUserId) => {
@@ -109,7 +126,7 @@ const getAsciiTable = (rewards, players, withUserId) => {
 
         if (withUserId) {
             const userId = players?.[index].user.hash_id ?? '';
-            return [rank, username, userId, reward];
+            return [rank, username, userId, `${reward} €` ];
         }
 
         return [rank, username, reward];
