@@ -1,11 +1,12 @@
 const cron = require('node-cron');
 const {getStartCommandArgs, fetchEmpireDrop, buildWagerRaceResults, checkConnectionWithEmpireDrop} = require("./utils");
+const { add, get } = require("./taskManager");
 
-let task;
 
-const startTask = async (interaction, guildId) => {
-    if (task) {
-        interaction.reply('Wager race already started');
+const startTask = async (interaction) => {
+    const guildId = interaction.guild.id;
+    if (get(guildId)) {
+        interaction.reply('A wager race is already started on this server, please use **/stop** before create a new one');
         return;
     }
 
@@ -21,7 +22,7 @@ const startTask = async (interaction, guildId) => {
         return;
     }
 
-    task = cron.schedule(guildId, '* * * * *', async () => {
+    const task = cron.schedule('0 * * * *', async () => {
         console.log(`Wager race running on id: ${guildId}`)
         const res = await fetchEmpireDrop(startTimestamp, endTimestamp, publicKey, privateKey);
         const empireDropRace = (await res.data);
@@ -38,11 +39,15 @@ const startTask = async (interaction, guildId) => {
         scheduled: false
     });
 
+    add(task, guildId);
+
     task.start();
 }
 
 const stopTask = async (interaction) => {
-    task.stop();
+    const guildId = interaction.guild.id;
+    const taskByGuildId = get(guildId);
+    taskByGuildId.stop();
     await interaction.reply("The wager race is now stopped");
 }
 
