@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const {getStartCommandArgs, fetchEmpireDrop, buildWagerRaceResults, schema} = require("../../utils");
 const z = require("zod");
 
@@ -7,7 +7,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('result')
         .setDescription('Get the result of the wager race')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addIntegerOption(option =>
             option.setName('start_timestamp')
                 .setDescription('The start timestamp of the wager race (format: 1714946400)')

@@ -1,12 +1,11 @@
 require('dotenv').config();
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, ChannelType } = require('discord.js');
 const { startTask } = require("../../cron");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('start')
         .setDescription('Start the wager race')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addIntegerOption(option =>
             option.setName('start_timestamp')
                 .setDescription('The start timestamp of the wager race (format: 1714946400)')
