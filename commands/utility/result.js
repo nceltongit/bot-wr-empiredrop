@@ -28,13 +28,14 @@ module.exports = {
                 .setDescription('The rewards table from biggest to smallest amount of the wager race  (format: [1000, 800, 700, ...])')
                 .setRequired(true)),
     async execute(interaction) {
+        await interaction.deferReply();
         const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed } = getStartCommandArgs(interaction);
 
         let rewards = [];
         try {
             rewards = JSON.parse(rewardsNotParsed);
         } catch (e) {
-            await interaction.reply("Rewards format is incorrect");
+            await interaction.editReply("Rewards format is incorrect");
             return;
         }
 
@@ -52,7 +53,7 @@ module.exports = {
                     errorMessages.push(issue.message);
                 })
             }
-            await interaction.reply(errorMessages.join("\n"));
+            await interaction.editReply(errorMessages.join("\n"));
             return;
         }
 
@@ -63,6 +64,6 @@ module.exports = {
 
         const { content } = await buildWagerRaceResults(rewards, players, startTimestamp, endTimestamp, true);
 
-        interaction.reply(content);
+        interaction.editReply(content);
     },
 };

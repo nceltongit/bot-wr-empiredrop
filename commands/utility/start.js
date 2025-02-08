@@ -32,6 +32,7 @@ module.exports = {
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildText)),
     async execute(interaction) {
+        await interaction.deferReply();
         await startTask(interaction);
     },
 };

@@ -63,7 +63,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     try {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
-        await interaction.reply("Rewards format is incorrect");
+        await interaction.editReply("Rewards format is incorrect");
         return;
     }
 
@@ -81,7 +81,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
                 errorMessages.push(issue.message);
             })
         }
-        await interaction.reply(errorMessages.join("\n"));
+        await interaction.editReply(errorMessages.join("\n"));
         return;
     }
 
@@ -91,13 +91,13 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     } catch (e) {
         console.log(e);
         if (e?.response?.data?.message) {
-            await interaction.reply(e.response.data.message);
+            await interaction.editReply(e.response.data.message);
             return;
         }
-        await interaction.reply("Error while fetching EMPIREDROP, please verify the public key you provided");
+        await interaction.editReply("Error while fetching EMPIREDROP, please verify the public key you provided");
     }
 
-    await interaction.reply("You are now connected with the EMPIREDROP api, result should be posted every hours !");
+    await interaction.editReply("You are now connected with the EMPIREDROP api, result should be posted every hours !");
 }
 
 const getAsciiTable = (rewards, players, withUserId) => {

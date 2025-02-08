@@ -6,6 +6,7 @@ module.exports = {
         .setName('stop')
         .setDescription('Stop the wager race'),
     async execute(interaction) {
+        await interaction.deferReply();
         await stopTask(interaction);
     },
 };

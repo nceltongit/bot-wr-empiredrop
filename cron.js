@@ -6,7 +6,7 @@ const { add, get } = require("./taskManager");
 const startTask = async (interaction) => {
     const guildId = interaction.guild.id;
     if (get(guildId)) {
-        interaction.reply('A wager race is already started on this server, please use **/stop** before create a new one');
+        interaction.editReply('A wager race is already started on this server, please use **/stop** before create a new one');
         return;
     }
 
@@ -18,7 +18,7 @@ const startTask = async (interaction) => {
     try {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
-        await interaction.reply("Rewards format is incorrect");
+        await interaction.editReply("Rewards format is incorrect");
         return;
     }
 
@@ -50,9 +50,9 @@ const stopTask = async (interaction) => {
 
     if (taskByGuildId) {
         taskByGuildId.stop();
-        await interaction.reply("The wager race is now stopped");
+        await interaction.editReply("The wager race is now stopped");
     } else {
-        await interaction.reply("There is no wager race to stop.");
+        await interaction.editReply("There is no wager race to stop.");
     }
 }
 
