@@ -54,13 +54,13 @@ module.exports = {
         if (!interaction.isChatInputCommand()) return;
 
         if (interaction.user.id !== interaction.guild.ownerId) {
-            interaction.reply('Only admin can use this command')
+            await interaction.reply('Only admin can use this command')
             return;
         }
 
         if (interaction.commandName === 'start') {
             if (interval) {
-                interaction.reply('start already running');
+                await interaction.reply('start already running');
                 return;
             }
             const channel = interaction.options.getChannel('channel');
@@ -74,7 +74,7 @@ module.exports = {
             try {
                 rewards = JSON.parse(rewardsNotParsed);
             } catch (e) {
-                interaction.reply("Rewards format is incorrect");
+                await interaction.reply("Rewards format is incorrect");
                 return;
             }
 
@@ -92,7 +92,7 @@ module.exports = {
                         errorMessages.push(issue.message);
                     })
                 }
-                interaction.reply(errorMessages.join("\n"));
+                await interaction.reply(errorMessages.join("\n"));
                 return;
             }
 
@@ -102,14 +102,14 @@ module.exports = {
             } catch (e) {
                 console.log(e);
                 if (e?.response?.data?.message) {
-                    interaction.reply(e.response.data.message);
+                    await interaction.reply(e.response.data.message);
                     return;
                 }
-                interaction.reply("Error while fetching EMPIREDROP, please verify the public key you provided");
+                await interaction.reply("Error while fetching EMPIREDROP, please verify the public key you provided");
                 return;
             }
 
-            interaction.reply("You are now connected with the EMPIREDROP api, result should be posted every hours !");
+            await interaction.reply("You are now connected with the EMPIREDROP api, result should be posted every hours !");
 
             interval = setInterval(async () => {
                 const res = await fetchEmpireDrop(startTimestamp, endTimestamp, publicKey, privateKey);
@@ -187,7 +187,7 @@ module.exports = {
 
         if (interaction.commandName === 'stop') {
             clearInterval(interval);
-            interaction.reply("The wager race is now stopped.");
+            await interaction.reply("The wager race is now stopped.");
             return;
         }
 
@@ -203,7 +203,7 @@ module.exports = {
             try {
                 rewards = JSON.parse(rewardsNotParsed);
             } catch (e) {
-                interaction.reply("Rewards format is incorrect");
+                await interaction.reply("Rewards format is incorrect");
                 return;
             }
 
@@ -221,7 +221,7 @@ module.exports = {
                         errorMessages.push(issue.message);
                     })
                 }
-                interaction.reply(errorMessages.join("\n"));
+                await interaction.reply(errorMessages.join("\n"));
                 return;
             }
 
@@ -258,14 +258,17 @@ module.exports = {
                     )} \n ${codeblock}`,
                 };
 
+                await interaction.reply("The results was send to the specified channel");
                 channel.send(content);
+
+                return;
             } catch (e) {
                 console.log(e);
                 if (e?.response?.data?.message) {
-                    interaction.reply(e.response.data.message);
+                    await interaction.reply(e.response.data.message);
                     return;
                 }
-                interaction.reply("Error while fetching EMPIREDROP, please verify the public key you provided");
+                await interaction.reply("Error while fetching EMPIREDROP, please verify the public key you provided");
                 return;
             }
         }
