@@ -181,7 +181,7 @@ module.exports = {
 
                     channel.send(content);
                 }
-            }, 10000);
+            }, 3600000);
             return;
         }
 
