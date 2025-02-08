@@ -6,7 +6,7 @@ const z = require("zod");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('result')
-        .setDescription('Get the result of the wager race')
+        .setDescription('Get the result of the wager race with users id')
         .addIntegerOption(option =>
             option.setName('start_timestamp')
                 .setDescription('The start timestamp of the wager race (format: 1714946400)')
