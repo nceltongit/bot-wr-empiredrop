@@ -47,8 +47,13 @@ const startTask = async (interaction) => {
 const stopTask = async (interaction) => {
     const guildId = interaction.guild.id;
     const taskByGuildId = get(guildId);
-    taskByGuildId.stop();
-    await interaction.reply("The wager race is now stopped");
+
+    if (taskByGuildId) {
+        taskByGuildId.stop();
+        await interaction.reply("The wager race is now stopped");
+    } else {
+        await interaction.reply("There is no wager race to stop.");
+    }
 }
 
 module.exports = { startTask, stopTask };
