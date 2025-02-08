@@ -8,6 +8,7 @@ const commands = [];
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 const clientId = process.env.CLIENT_ID;
+const guilId = process.env.GUILD_ID;
 const token = process.env.CLIENT_TOKEN;
 
 for (const folder of commandFolders) {
@@ -36,7 +37,7 @@ const rest = new REST().setToken(token);
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
-            Routes.applicationCommands(clientId),
+            Routes.applicationGuildCommands(clientId, guilId),
             { body: commands },
         );
 

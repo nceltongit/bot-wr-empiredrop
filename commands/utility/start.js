@@ -1,5 +1,7 @@
 require('dotenv').config();
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { startTask, task } = require("../../cron");
+const { checkConnectionWithEmpireDrop } = require("../../utils");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,5 +33,7 @@ module.exports = {
                 .setDescription('The channel to post result to')
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildText)),
-    async execute(interaction) {},
+    async execute(interaction) {
+        await startTask(interaction, interaction.guild.id);
+    },
 };
