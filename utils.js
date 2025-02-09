@@ -58,7 +58,7 @@ const getStartCommandArgs = (interaction) => {
 }
 
 const checkConnectionWithEmpireDrop = async (interaction) => {
-    const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery } = getStartCommandArgs(interaction);
+    const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery, channel } = getStartCommandArgs(interaction);
 
     let rewards = [];
     try {
@@ -88,7 +88,12 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
 
     try {
         const res = await fetchEmpireDrop(startTimestamp, endTimestamp, publicKey, privateKey);
-        (await res.data);
+        const empireDropRace = (await res.data);
+        const players = empireDropRace.ranking.slice(0, rewards.length);
+
+        const { content } = await buildWagerRaceResults(rewards, players, startTimestamp, endTimestamp);
+
+        channel.send(content);
     } catch (e) {
         console.log(e);
         if (e?.response?.data?.message) {
