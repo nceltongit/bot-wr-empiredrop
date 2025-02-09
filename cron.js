@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const {getStartCommandArgs, fetchEmpireDrop, buildWagerRaceResults, checkConnectionWithEmpireDrop} = require("./utils");
-const { add, get } = require("./taskManager");
+const { add, get, deleteTask } = require("./taskManager");
 
 
 const startTask = async (interaction) => {
@@ -50,6 +50,7 @@ const stopTask = async (interaction) => {
 
     if (taskByGuildId) {
         taskByGuildId.stop();
+        deleteTask(guildId);
         await interaction.editReply("The wager race is now stopped");
     } else {
         await interaction.editReply("There is no wager race to stop.");
