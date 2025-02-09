@@ -6,14 +6,14 @@ const { addHours, format, intervalToDuration, formatDuration } = require("date-f
 const schema = z.object({
     startTimestamp: z.number().gte(1704067200, "Format error on start_timestamp").lte(9999999999, "Format error on start_timestamp"),
     endTimestamp: z.number().gte(1704067200, "Format error on end_timestamp").lte(9999999999, "Format error on end_timestamp"),
-    rewards: z.array(z.number({ invalid_type_error: "Format error on rewards" }), { invalid_type_error: "Format error on rewards" }).min(1, "Rewards must contain at least 1 element")
+    rewards: z.array(z.number({ invalid_type_error: "Format error on prize_by_rank" }), { invalid_type_error: "Format error on rewards" }).min(1, "Rewards must contain at least 1 element")
 }).superRefine(({ start_timestamp, end_timestamp, rewards }, ctx) => {
     let prevReward = undefined;
     rewards.forEach((reward, index) => {
         if (index !== 0 && reward > prevReward) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: "The rewards table format must be from biggest to smallest amount",
+                message: "The prize_by_rank table format must be from biggest to smallest amount",
             });
             return;
         }
@@ -51,7 +51,7 @@ const getStartCommandArgs = (interaction) => {
     const endTimestamp = interaction.options.getInteger('end_timestamp');
     const privateKey = interaction.options.getString('private_key');
     const publicKey = interaction.options.getString('public_key');
-    const rewardsNotParsed = interaction.options.getString('rewards');
+    const rewardsNotParsed = interaction.options.getString('prize_by_rank');
     const updateEvery = interaction.options.getString('update_every');
 
     return { channel, startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery };

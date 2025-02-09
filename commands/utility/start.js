@@ -8,11 +8,11 @@ module.exports = {
         .setDescription('Start the wager race')
         .addIntegerOption(option =>
             option.setName('start_timestamp')
-                .setDescription('The start timestamp of the wager race (format: 1714946400)')
+                .setDescription('The start timestamp (format: 1714946400) can be generated here https://www.unixtimestamp.com/')
                 .setRequired(true))
         .addIntegerOption(option =>
             option.setName('end_timestamp')
-                .setDescription('The end timestamp of the wager race (format: 1714946400)')
+                .setDescription('The end timestamp (format: 1714946400 can be generated here https://www.unixtimestamp.com/)')
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('public_key')
@@ -23,12 +23,12 @@ module.exports = {
                 .setDescription('The private key of EMPIREDROP')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('rewards')
-                .setDescription('The rewards table from biggest to smallest amount of the wager race  (format: [1000, 800, 700, ...])')
+            option.setName('prize_by_rank')
+                .setDescription('Prize by rank from biggest to smallest amount in Euros (format: [1000, 800, 700, ...])')
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('update_every')
-                .setDescription('The time the wager race will be refreshed (a new message will be post in your channel)')
+                .setDescription('The time the wager race will be refreshed (a new message will be posted in your channel)')
                 .setRequired(true)
                 .addChoices(
                     { name: 'Every 6h', value: '0 */6 * * *' },
