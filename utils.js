@@ -129,12 +129,12 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
 const getAsciiTable = (rewards, players, withUserId) => {
     const heading = withUserId ? ['Rank', 'Username', 'UserId', 'prize'] : ['Rank', 'Username', 'prize'];
     const tableContent = rewards.map((reward, index) => {
-        const username = players?.[index].user.name ?? '';
+        const username = players?.[index]?.user.name ?? '';
 
         const rank = index + 1;
 
         if (withUserId) {
-            const userId = players?.[index].user.hash_id ?? '';
+            const userId = players?.[index]?.user.hash_id ?? '';
             return [rank, username, userId, `${reward} €` ];
         }
 
@@ -180,6 +180,25 @@ const buildWagerRaceResults = async (rewards, players, startTimestamp, endTimest
                 endDate,
                 'dd/MM/yyyy h:mm aaa',
             )} UTC \n ENDED \n Please wait one more hour to get the final result`,
+        };
+    } else if (new Date() < startDate) {
+        let duration = intervalToDuration({
+            start: new Date(),
+            end: startDate,
+        });
+        const timeleft = formatDuration(duration, {
+            delimiter: ', ',
+            format: ['days', 'hours', 'minutes']
+        });
+
+        return {
+            content: `# WAGER RACE _EMPIREDROP_ \n## ${format(
+                startDate,
+                'dd/MM/yyyy h:mm aaa',
+            )} UTC - ${format(
+                endDate,
+                'dd/MM/yyyy h:mm aaa',
+            )} UTC \n The wager race will begin in ${timeleft}`,
         };
     } else {
         let duration = intervalToDuration({
