@@ -18,7 +18,7 @@ const startTask = async (interaction) => {
     try {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
-        await interaction.editReply("Rewards format is incorrect");
+        await interaction.editReply("Prize by rank format is incorrect");
         return;
     }
 
@@ -30,7 +30,10 @@ const startTask = async (interaction) => {
 
         const { content, endTask } = await buildWagerRaceResults(rewards, players, startTimestamp, endTimestamp);
 
-        channel.send(content);
+        channel.send(content).catch(async e => {
+            console.error(e);
+            await interaction.editReply("The bot doesn't have the permission to send message on the channel");
+        });
 
         if (endTask) {
             task.stop();

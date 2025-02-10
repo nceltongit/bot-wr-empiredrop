@@ -6,7 +6,7 @@ const { addHours, format, intervalToDuration, formatDuration } = require("date-f
 const schema = z.object({
     startTimestamp: z.number().gte(1704067200, "Format error on start_timestamp").lte(9999999999, "Format error on start_timestamp"),
     endTimestamp: z.number().gte(1704067200, "Format error on end_timestamp").lte(9999999999, "Format error on end_timestamp"),
-    rewards: z.array(z.number({ invalid_type_error: "Format error on prize_by_rank" }), { invalid_type_error: "Format error on rewards" }).min(1, "Rewards must contain at least 1 element")
+    rewards: z.array(z.number({ invalid_type_error: "Format error on prize_by_rank" }), { invalid_type_error: "Format error on rewards" }).min(1, "Prize by rank must contain at least 1 element")
 }).superRefine(({ start_timestamp, end_timestamp, rewards }, ctx) => {
     let prevReward = undefined;
     rewards.forEach((reward, index) => {
@@ -64,7 +64,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     try {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
-        await interaction.editReply("Rewards format is incorrect");
+        await interaction.editReply("Prize by rank format is incorrect");
         return;
     }
 
@@ -93,7 +93,11 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
 
         const { content } = await buildWagerRaceResults(rewards, players, startTimestamp, endTimestamp);
 
-        channel.send(content);
+        channel.send(content).catch(async e => {
+            console.error(e)
+            await interaction.editReply("The bot doesn't have the permission to send message on the channel");
+        });
+
     } catch (e) {
         console.log(e);
         if (e?.response?.data?.message) {
@@ -161,10 +165,10 @@ const buildWagerRaceResults = async (rewards, players, startTimestamp, endTimest
             content: `# FINAL RESULT WAGER RACE _EMPIREDROP_ \n## ${format(
                 startDate,
                 'dd/MM/yyyy h:mm aaa',
-            )} - ${format(
+            )} UTC - ${format(
                 endDate,
                 'dd/MM/yyyy h:mm aaa',
-            )} \n ${codeblock}\n${!resultWithUserId ? '-# If you want the users ids please use the /result command in a private channel' : ''}`,
+            )} UTC \n ${codeblock}\n`,
             endTask: true,
         };
     } else if (new Date() > endDate) {
@@ -172,10 +176,10 @@ const buildWagerRaceResults = async (rewards, players, startTimestamp, endTimest
             content: `# WAGER RACE _EMPIREDROP_ \n## ${format(
                 startDate,
                 'dd/MM/yyyy h:mm aaa',
-            )} - ${format(
+            )} UTC - ${format(
                 endDate,
                 'dd/MM/yyyy h:mm aaa',
-            )}\n ENDED \n Please wait one more hour to get the final result`,
+            )} UTC \n ENDED \n Please wait one more hour to get the final result`,
         };
     } else {
         let duration = intervalToDuration({
@@ -192,10 +196,10 @@ const buildWagerRaceResults = async (rewards, players, startTimestamp, endTimest
             content: `# WAGER RACE _EMPIREDROP_ \n ## ${format(
                 startDate,
                 'dd/MM/yyyy h:mm aaa',
-            )} - ${format(
+            )} UTC - ${format(
                 endDate,
                 'dd/MM/yyyy h:mm aaa',
-            )}\n ### TIMELEFT :  ${timeleft}  \n ${codeblock}`,
+            )} UTC \n ### TIMELEFT :  ${timeleft}  \n ${codeblock}`,
         };
     }
 }
