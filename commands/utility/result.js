@@ -24,7 +24,7 @@ module.exports = {
                 .setDescription('The private key of EMPIREDROP')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('rewards')
+            option.setName('prize_by_rank')
                 .setDescription('The rewards table from biggest to smallest amount of the wager race  (format: [1000, 800, 700, ...])')
                 .setRequired(true)),
     async execute(interaction) {
@@ -35,7 +35,7 @@ module.exports = {
         try {
             rewards = JSON.parse(rewardsNotParsed);
         } catch (e) {
-            await interaction.editReply("Rewards format is incorrect");
+            await interaction.editReply("Prize by rank format is incorrect");
             return;
         }
 
