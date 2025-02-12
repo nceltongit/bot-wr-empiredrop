@@ -127,18 +127,19 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
 }
 
 const getAsciiTable = (rewards, players, withUserId) => {
-    const heading = withUserId ? ['Rank', 'Username', 'UserId', 'prize'] : ['Rank', 'Username', 'prize'];
+    const heading = withUserId ? ['Rank', 'Username', 'UserId', 'Wager', 'Prizes'] : ['Rank', 'Username', 'Wager', 'Prizes'];
     const tableContent = rewards.map((reward, index) => {
         const username = players?.[index]?.user.name ?? '';
+        const wager = players?.[index]?.total_value ?? '';
 
         const rank = index + 1;
 
         if (withUserId) {
             const userId = players?.[index]?.user.hash_id ?? '';
-            return [rank, username, userId, `${reward} €` ];
+            return [rank, username, userId, `${wager}€`, `${reward}€` ];
         }
 
-        return [rank, username, reward];
+        return [rank, username, `${wager}€`, `${reward}€`];
     });
 
     const table = new AsciiTable()
