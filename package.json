@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@date-fns/utc": "^2.1.0",
     "ascii-table": "^0.0.9",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",

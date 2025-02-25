@@ -2,7 +2,8 @@ const fs = require("fs").promises;
 const z = require("zod");
 const axios = require("axios");
 const AsciiTable = require("ascii-table");
-const { addHours, format, intervalToDuration, formatDuration } = require("date-fns");
+const { addHours, format, intervalToDuration, formatDuration, isAfter, isBefore} = require("date-fns");
+const {UTCDate} = require("@date-fns/utc");
 
 const schema = z.object({
     startTimestamp: z.number().gte(1704067200, "Format error on start_timestamp").lte(9999999999, "Format error on start_timestamp"),
@@ -150,79 +151,84 @@ const getAsciiTable = (rewards, players, withUserId) => {
     return `\`\`\`\n${table.toString()}\`\`\``;
 }
 
-const buildWagerRaceResults = async (rewards, players, startTimestamp, endTimestamp, resultWithUserId) => {
-    const startDate = new Date(startTimestamp * 1000);
-    const endDate = new Date(endTimestamp * 1000);
+const buildWagerRaceResults = async (
+    rewards,
+    players,
+    startTimestamp,
+    endTimestamp,
+    resultWithUserId,
+) => {
+  const startDate = new UTCDate(startTimestamp * 1000)
+  const endDate = new UTCDate(endTimestamp * 1000)
 
-    let codeblock = '';
+  let codeblock = ''
 
-    if (resultWithUserId) {
-        codeblock = getAsciiTable(rewards, players, true);
-    } else {
-        codeblock = getAsciiTable(rewards, players);
+  if (resultWithUserId) {
+    codeblock = getAsciiTable(rewards, players, true)
+  } else {
+    codeblock = getAsciiTable(rewards, players)
+  }
+
+  const now = new UTCDate()
+
+  if (isAfter(now, addHours(endDate, 1))) {
+    return {
+      content: `# FINAL RESULT WAGER RACE _EMPIREDROP_ \n## ${format(
+          startDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC - ${format(endDate, 'dd/MM/yyyy h:mm aaa')} UTC \n ${codeblock}\n`,
+      endTask: true,
     }
-
-    if (addHours(new Date(), 1) > endDate) {
-        return {
-            content: `# FINAL RESULT WAGER RACE _EMPIREDROP_ \n## ${format(
-                startDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC - ${format(
-                endDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC \n ${codeblock}\n`,
-            endTask: true,
-        };
-    } else if (new Date() > endDate) {
-        return {
-            content: `# WAGER RACE _EMPIREDROP_ \n## ${format(
-                startDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC - ${format(
-                endDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC \n ENDED \n Please wait one more hour to get the final result`,
-        };
-    } else if (new Date() < startDate) {
-        let duration = intervalToDuration({
-            start: new Date(),
-            end: startDate,
-        });
-        const timeleft = formatDuration(duration, {
-            delimiter: ', ',
-            format: ['days', 'hours', 'minutes']
-        });
-
-        return {
-            content: `# WAGER RACE _EMPIREDROP_ \n## ${format(
-                startDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC - ${format(
-                endDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC \n The wager race will begin in ${timeleft}`,
-        };
-    } else {
-        let duration = intervalToDuration({
-            start: new Date(),
-            end: endDate,
-        })
-
-        const timeleft = formatDuration(duration, {
-            delimiter: ', ',
-            format: ['days', 'hours', 'minutes']
-        });
-
-        return {
-            content: `# WAGER RACE _EMPIREDROP_ \n ## ${format(
-                startDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC - ${format(
-                endDate,
-                'dd/MM/yyyy h:mm aaa',
-            )} UTC \n ### TIMELEFT :  ${timeleft}  \n ${codeblock}`,
-        };
+  } else if (isAfter(now, endDate)) {
+    return {
+      content: `# WAGER RACE _EMPIREDROP_ \n## ${format(
+          startDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC - ${format(
+          endDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC \n ${codeblock}\n Please wait the next message to get the final result`,
     }
+  } else if (isBefore(now, startDate)) {
+    let duration = intervalToDuration({
+      start: new UTCDate(),
+      end: startDate,
+    })
+    const timeleft = formatDuration(duration, {
+      delimiter: ', ',
+      format: ['days', 'hours', 'minutes'],
+    })
+
+    return {
+      content: `# WAGER RACE _EMPIREDROP_ \n## ${format(
+          startDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC - ${format(
+          endDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC \n The wager race will begin in ${timeleft}`,
+    }
+  } else {
+    let duration = intervalToDuration({
+      start: new UTCDate(),
+      end: endDate,
+    })
+
+    const timeleft = formatDuration(duration, {
+      delimiter: ', ',
+      format: ['days', 'hours', 'minutes'],
+    })
+
+    return {
+      content: `# WAGER RACE _EMPIREDROP_ \n ## ${format(
+          startDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC - ${format(
+          endDate,
+          'dd/MM/yyyy h:mm aaa',
+      )} UTC \n ### TIMELEFT :  ${timeleft}  \n ${codeblock}`,
+    }
+  }
 }
 
 async function readJSONFile(filename) {
