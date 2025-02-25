@@ -1,3 +1,4 @@
+const fs = require("fs").promises;
 const z = require("zod");
 const axios = require("axios");
 const AsciiTable = require("ascii-table");
@@ -224,10 +225,21 @@ const buildWagerRaceResults = async (rewards, players, startTimestamp, endTimest
     }
 }
 
+async function readJSONFile(filename) {
+    try {
+        const data = await fs.readFile(filename, "utf8");
+        return JSON.parse(data);
+    } catch (error) {
+        console.error(`Error reading ${filename}: ${error}`);
+        return [];
+    }
+}
+
 module.exports = {
     checkConnectionWithEmpireDrop,
     buildWagerRaceResults,
     getStartCommandArgs,
     fetchEmpireDrop,
+    readJSONFile,
     schema
 }

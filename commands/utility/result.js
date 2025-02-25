@@ -64,6 +64,6 @@ module.exports = {
 
         const { content } = await buildWagerRaceResults(rewards, players, startTimestamp, endTimestamp, true);
 
-        interaction.editReply(content);
+        await interaction.editReply(content);
     },
 };

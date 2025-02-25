@@ -1,3 +1,4 @@
+const {promises: fs} = require("fs");
 let tasks = [];
 
 const add = (task, guildId) => {
@@ -5,8 +6,9 @@ const add = (task, guildId) => {
 };
 
 const get = (guildId) => tasks.find((task) => task.guildId === guildId)?.task;
-const deleteTask = (guildId) => {
+const deleteTask = async (guildId) => {
     tasks = tasks.filter((task) => task.guildId !== guildId);
+    await fs.unlink(`./races/race_${guildId}.json`);
 }
 
 module.exports = {

@@ -1,4 +1,5 @@
 const cron = require('node-cron');
+const fs = require("fs").promises;
 const {getStartCommandArgs, fetchEmpireDrop, buildWagerRaceResults, checkConnectionWithEmpireDrop} = require("./utils");
 const { add, get, deleteTask } = require("./taskManager");
 
@@ -37,12 +38,25 @@ const startTask = async (interaction) => {
 
         if (endTask) {
             task.stop();
+            deleteTask(guildId);
         }
     }, {
         scheduled: false
     });
 
     add(task, guildId);
+    const race = {
+        guildId,
+        channelId: channel.id,
+        startTimestamp,
+        endTimestamp,
+        privateKey,
+        publicKey,
+        rewards,
+        updateEvery
+    }
+
+    await fs.writeFile(`./races/race_${guildId}.json`, JSON.stringify(race, null, 2));
 
     task.start();
 }
