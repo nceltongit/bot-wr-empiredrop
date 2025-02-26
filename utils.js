@@ -67,7 +67,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
         await interaction.editReply("Prize by rank format is incorrect");
-        return;
+        return false;
     }
 
     try {
@@ -85,7 +85,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
             })
         }
         await interaction.editReply(errorMessages.join("\n"));
-        return;
+        return false;
     }
 
     try {
@@ -104,9 +104,10 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
         console.log(e);
         if (e?.response?.data?.message) {
             await interaction.editReply(e.response.data.message);
-            return;
+            return false;
         }
         await interaction.editReply("Error while fetching EMPIREDROP, please verify the public key you provided");
+        return false;
     }
 
     let hours = '';
@@ -126,6 +127,8 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     }
 
     await interaction.editReply(`You are now connected with the EMPIREDROP api, result should be posted every ${hours} hours !`);
+
+    return true;
 }
 
 const getAsciiTable = (rewards, players, withUserId) => {

@@ -11,7 +11,11 @@ const startTask = async (interaction) => {
         return;
     }
 
-    await checkConnectionWithEmpireDrop(interaction);
+    const isConnected = await checkConnectionWithEmpireDrop(interaction);
+
+    if (!isConnected) {
+        return
+    }
 
     const { channel, startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery } = getStartCommandArgs(interaction);
 
