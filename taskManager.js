@@ -6,9 +6,14 @@ const add = (task, guildId) => {
 };
 
 const get = (guildId) => tasks.find((task) => task.guildId === guildId)?.task;
-const deleteTask = async (guildId) => {
+const deleteTask = async (guildId, guildName) => {
     tasks = tasks.filter((task) => task.guildId !== guildId);
-    await fs.unlink(`./races/race_${guildId}.json`);
+    try {
+        await fs.unlink(`./races/race_${guildId}.json`);
+        console.log(`Successfully deleting race file on server ${guildId} and name is ${guildName}`);
+    } catch (e) {
+        console.log(`Error when deleting race file on server ${guildId} and name is ${guildName} ${e}`);
+    }
 }
 
 module.exports = {

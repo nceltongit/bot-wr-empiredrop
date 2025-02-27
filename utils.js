@@ -61,11 +61,14 @@ const getStartCommandArgs = (interaction) => {
 
 const checkConnectionWithEmpireDrop = async (interaction) => {
     const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed, updateEvery, channel } = getStartCommandArgs(interaction);
+    const guildId = interaction.guild.id;
+    const guildName = interaction.guild.name;
 
     let rewards = [];
     try {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
+        console.log(`Prize by rank format is incorrect on server ${guildId} and name is ${guildName}`);
         await interaction.editReply("Prize by rank format is incorrect");
         return false;
     }
@@ -97,6 +100,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
 
         channel.send(content).catch(async e => {
             console.error(e)
+            console.log(`The bot doesn't have the permission to send message on server ${guildId} and name is ${guildName}`);
             await interaction.editReply("The bot doesn't have the permission to send message on the channel");
         });
 
@@ -106,6 +110,8 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
             await interaction.editReply(e.response.data.message);
             return false;
         }
+        console.log(`Error while fetching EMPIREDROP on server ${guildId} and name is ${guildName}`);
+        console.log(`With startTimestamp: ${startTimestamp}, endTimestamp: ${endTimestamp}, privateKey: ${privateKey}, publicKey: ${publicKey}, rewards: ${rewardsNotParsed}, updateEvery: ${updateEvery}, channel: ${channel}`);
         await interaction.editReply("Error while fetching EMPIREDROP, please verify the public key you provided");
         return false;
     }
@@ -127,6 +133,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     }
 
     await interaction.editReply(`You are now connected with the EMPIREDROP api, result should be posted every ${hours} hours !`);
+    console.log(`Connected with the EMPIREDROP api on server ${guildId} and name is ${guildName}`);
 
     return true;
 }

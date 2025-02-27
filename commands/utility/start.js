@@ -42,6 +42,7 @@ module.exports = {
                 .addChannelTypes(ChannelType.GuildText)),
     async execute(interaction) {
         await interaction.deferReply();
+        console.log(`Start command on server ${interaction.guild.id} and name is ${interaction.guild.name}`);
         await startTask(interaction);
     },
 };

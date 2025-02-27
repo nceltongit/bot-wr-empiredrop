@@ -13,6 +13,8 @@ module.exports = {
         try {
             const racesFiles = fs.readdirSync('./races').filter(file => file.endsWith('.json'));
 
+            console.log(`${racesFiles.length} races found`);
+
             for (const file of racesFiles) {
                 const {
                     startTimestamp,
@@ -21,12 +23,13 @@ module.exports = {
                     privateKey,
                     channelId,
                     guildId,
+                    guildName,
                     rewards,
                     updateEvery
                 } = await readJSONFile(`./races/${file}`);
 
                 const task = cron.schedule(updateEvery, async () => {
-                    console.log(`Wager race running on id: ${guildId}`)
+                    console.log(`Wager race running on id: ${guildId} and name: ${guildName}`);
                     const res = await fetchEmpireDrop(startTimestamp, endTimestamp, publicKey, privateKey);
                     const empireDropRace = (await res.data);
                     const players = empireDropRace.ranking.slice(0, rewards.length);
@@ -37,11 +40,13 @@ module.exports = {
 
                     channel.send(content).catch(async e => {
                         console.error(e);
+                        console.log(`Message not send on server ${guildId} and name: ${guildName}`);
                     });
 
                     if (endTask) {
                         task.stop();
-                        deleteTask(guildId);
+                        deleteTask(guildId, guildName);
+                        console.log(`The race is ended automatically on server ${guildId} and name: ${guildName}`);
                     }
                 }, {
                     scheduled: false
@@ -49,10 +54,12 @@ module.exports = {
 
                 add(task, guildId);
 
+                console.log(`Task start after reading files on server ${guildId} and name: ${guildName}`);
                 task.start();
             }
         } catch (error) {
             console.error(error);
+            console.log(`Error when reading file for server ${guildId} and name: ${guildName}`);
         }
     },
 };
