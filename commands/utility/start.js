@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { SlashCommandBuilder, ChannelType } = require('discord.js');
 const { startTask } = require("../../cron");
+const {logger} = require("../../logger");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -42,7 +43,7 @@ module.exports = {
                 .addChannelTypes(ChannelType.GuildText)),
     async execute(interaction) {
         await interaction.deferReply();
-        console.log(`Start command on server ${interaction.guild.id} and name is ${interaction.guild.name}`);
+        logger.info(`Start command on server ${interaction.guild.id} and name is ${interaction.guild.name}`);
         await startTask(interaction);
     },
 };

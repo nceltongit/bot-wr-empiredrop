@@ -4,6 +4,7 @@ const axios = require("axios");
 const AsciiTable = require("ascii-table");
 const { addHours, format, intervalToDuration, formatDuration, isAfter, isBefore} = require("date-fns");
 const {UTCDate} = require("@date-fns/utc");
+const {logger} = require("./logger");
 
 const schema = z.object({
     startTimestamp: z.number().gte(1704067200, "Format error on start_timestamp").lte(9999999999, "Format error on start_timestamp"),
@@ -68,7 +69,8 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     try {
         rewards = JSON.parse(rewardsNotParsed);
     } catch (e) {
-        console.log(`Prize by rank format is incorrect on server ${guildId} and name is ${guildName}`);
+        logger.error(e);
+        logger.info(`Prize by rank format is incorrect on server ${guildId} and name is ${guildName}`);
         await interaction.editReply("Prize by rank format is incorrect");
         return false;
     }
@@ -82,11 +84,12 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     } catch (err) {
         const errorMessages = [];
         if (err instanceof z.ZodError) {
-            console.log(err.issues);
+            logger.error(err.issues);
             err.issues.forEach((issue) => {
                 errorMessages.push(issue.message);
             })
         }
+        logger.error(errorMessages.join("\n"));
         await interaction.editReply(errorMessages.join("\n"));
         return false;
     }
@@ -99,19 +102,19 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
         const { content } = await buildWagerRaceResults(rewards, players, startTimestamp, endTimestamp);
 
         channel.send(content).catch(async e => {
-            console.error(e)
-            console.log(`The bot doesn't have the permission to send message on server ${guildId} and name is ${guildName}`);
+            logger.error(e);
+            logger.error(`The bot doesn't have the permission to send message on server ${guildId} and name is ${guildName}`);
             await interaction.editReply("The bot doesn't have the permission to send message on the channel");
         });
 
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         if (e?.response?.data?.message) {
             await interaction.editReply(e.response.data.message);
             return false;
         }
-        console.log(`Error while fetching EMPIREDROP on server ${guildId} and name is ${guildName}`);
-        console.log(`With startTimestamp: ${startTimestamp}, endTimestamp: ${endTimestamp}, privateKey: ${privateKey}, publicKey: ${publicKey}, rewards: ${rewardsNotParsed}, updateEvery: ${updateEvery}, channel: ${channel}`);
+        logger.error(`Error while fetching EMPIREDROP on server ${guildId} and name is ${guildName}`);
+        logger.error(`With startTimestamp: ${startTimestamp}, endTimestamp: ${endTimestamp}, privateKey: ${privateKey}, publicKey: ${publicKey}, rewards: ${rewardsNotParsed}, updateEvery: ${updateEvery}, channel: ${channel}`);
         await interaction.editReply("Error while fetching EMPIREDROP, please verify the public key you provided");
         return false;
     }
@@ -133,7 +136,7 @@ const checkConnectionWithEmpireDrop = async (interaction) => {
     }
 
     await interaction.editReply(`You are now connected with the EMPIREDROP api, result should be posted every ${hours} hours !`);
-    console.log(`Connected with the EMPIREDROP api on server ${guildId} and name is ${guildName}`);
+    logger.info(`Connected with the EMPIREDROP api on server ${guildId} and name is ${guildName}`);
 
     return true;
 }
@@ -246,7 +249,7 @@ async function readJSONFile(filename) {
         const data = await fs.readFile(filename, "utf8");
         return JSON.parse(data);
     } catch (error) {
-        console.error(`Error reading ${filename}: ${error}`);
+        logger.error(`Error reading ${filename}: ${error}`);
         return [];
     }
 }

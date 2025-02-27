@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { stopTask } = require("../../cron");
+const {logger} = require("../../logger");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,7 +8,7 @@ module.exports = {
         .setDescription('Stop the wager race'),
     async execute(interaction) {
         await interaction.deferReply();
-        console.log(`Stop command on server ${interaction.guild.id} and name is ${interaction.guild.name}`);
+        logger.info(`Stop command on server ${interaction.guild.id} and name is ${interaction.guild.name}`);
         await stopTask(interaction);
     },
 };

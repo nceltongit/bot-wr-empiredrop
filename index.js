@@ -8,17 +8,18 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.commands = new Collection();
 
 const process = require('node:process');
+const {logger} = require("./logger");
 
 process.on('unhandledRejection', async (reason, promise) => {
-    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
 process.on('uncaughtException', async (err) => {
-    console.log('Uncaught Exception:', err);
+    logger.error('Uncaught Exception:', err);
 });
 
 process.on('uncaughtExceptionMonitor', async (err, origin) => {
-    console.log('Uncaught Exception Monitor', err, origin);
+    logger.error('Uncaught Exception Monitor', err, origin);
 });
 
 const foldersPath = path.join(__dirname, 'commands');
@@ -33,7 +34,7 @@ for (const folder of commandFolders) {
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
-            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+            logger.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
     }
 }

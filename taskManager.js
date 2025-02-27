@@ -1,4 +1,5 @@
 const {promises: fs} = require("fs");
+const {logger} = require("./logger");
 let tasks = [];
 
 const add = (task, guildId) => {
@@ -10,9 +11,9 @@ const deleteTask = async (guildId, guildName) => {
     tasks = tasks.filter((task) => task.guildId !== guildId);
     try {
         await fs.unlink(`./races/race_${guildId}.json`);
-        console.log(`Successfully deleting race file on server ${guildId} and name is ${guildName}`);
+        logger.info(`Successfully deleting race file on server ${guildId} and name is ${guildName}`);
     } catch (e) {
-        console.log(`Error when deleting race file on server ${guildId} and name is ${guildName} ${e}`);
+        logger.error(`Error when deleting race file on server ${guildId} and name is ${guildName} ${e}`);
     }
 }
 

@@ -2,6 +2,7 @@ require('dotenv').config();
 const { SlashCommandBuilder } = require('discord.js');
 const {getStartCommandArgs, fetchEmpireDrop, buildWagerRaceResults, schema} = require("../../utils");
 const z = require("zod");
+const {logger} = require("../../logger");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,12 +30,17 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply();
+        const guildId = interaction.guild.id;
+        const guildName = interaction.guild.name;
+        logger.info(`Result command on server ${guildId} and name is ${guildName}`);
         const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed } = getStartCommandArgs(interaction);
+        logger.info(`With parameters startTimestamp ${startTimestamp}, endTimestamp ${endTimestamp}, publicKey: ${publicKey}, privateKey: ${privateKey}, rewardsNotParsed: ${rewardsNotParsed}`);
 
         let rewards = [];
         try {
             rewards = JSON.parse(rewardsNotParsed);
         } catch (e) {
+            logger.error(`Prize by rank format is incorrect on server ${guildId} and name is ${guildName}`);
             await interaction.editReply("Prize by rank format is incorrect");
             return;
         }
@@ -48,11 +54,12 @@ module.exports = {
         } catch (err) {
             const errorMessages = [];
             if (err instanceof z.ZodError) {
-                console.log(err.issues);
+                logger.error(err.issues);
                 err.issues.forEach((issue) => {
                     errorMessages.push(issue.message);
                 })
             }
+            logger.error(`${errorMessages.join("\n")} on server ${guildId} and name is ${guildName}`);
             await interaction.editReply(errorMessages.join("\n"));
             return;
         }
