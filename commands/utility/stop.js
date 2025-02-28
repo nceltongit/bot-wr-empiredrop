@@ -8,7 +8,7 @@ module.exports = {
         .setDescription('Stop the wager race'),
     async execute(interaction) {
         await interaction.deferReply();
-        logger.info(`Stop command on server ${interaction.guild.id} and name is ${interaction.guild.name}`);
+        logger.info(`Stop command on server ${interaction.guild.id} and name is ${interaction.guild.name} by ${interaction.user.username}`);
         await stopTask(interaction);
     },
 };

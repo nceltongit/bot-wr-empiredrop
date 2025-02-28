@@ -32,7 +32,7 @@ module.exports = {
         await interaction.deferReply();
         const guildId = interaction.guild.id;
         const guildName = interaction.guild.name;
-        logger.info(`Result command on server ${guildId} and name is ${guildName}`);
+        logger.info(`Result command on server ${guildId} and name is ${guildName} by ${interaction.user.username}`);
         const { startTimestamp, endTimestamp, privateKey, publicKey, rewardsNotParsed } = getStartCommandArgs(interaction);
         logger.info(`With parameters startTimestamp ${startTimestamp}, endTimestamp ${endTimestamp}, publicKey: ${publicKey}, privateKey: ${privateKey}, rewardsNotParsed: ${rewardsNotParsed}`);
 
